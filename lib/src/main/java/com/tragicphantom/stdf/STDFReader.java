@@ -98,8 +98,8 @@ public class STDFReader{
          if(header.getType() != 0 && header.getSubType() != 10)
             throw new ParseException("Invalid header sequence", 0);
 
-	 // FAR record should always be length=2
-	 header.set(2, header.getType(), header.getSubType());
+         // FAR record should always be length=2
+         header.set(2, header.getType(), header.getSubType());
 
          Record record = readRecord(header, records);
 

@@ -20,6 +20,7 @@ package com.tragicphantom.stdf;
 
 import java.nio.ByteOrder;
 
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 public class Record{
@@ -56,6 +57,51 @@ public class Record{
       if(rd == null)
          rd = desc.parse(pos, data, byteOrder);
       return rd;
+   }
+
+   public int indexOf(String targetStr) {
+      if (targetStr == null || targetStr.isEmpty()) {
+         return -1;
+      }
+
+      // Convert the search string to bytes exactly once
+      byte[] target = targetStr.getBytes(StandardCharsets.UTF_8);
+      return indexOf(target);
+   }
+
+   public int indexOf(byte[] target) {
+      if (target.length == 0) {
+         return 0;
+      }
+      if (data.length < target.length) {
+         return -1;
+      }
+
+      // Pre-cache first byte and bounds to optimize the inner loop
+      byte first = target[0];
+      int max = data.length - target.length;
+
+      for (int i = 0; i <= max; i++) {
+         // Look for first byte match
+         if (data[i] != first) {
+            while (++i <= max && data[i] != first);
+         }
+
+         // Found first byte, check the rest of the sequence
+         if (i <= max) {
+            int j = i + 1;
+            int end = j + target.length - 1;
+            int k = 1;
+            while (j < end && data[j] == target[k]) {
+               j++;
+               k++;
+            }
+            if (j == end) {
+               return i; // Found whole sequence match
+            }
+         }
+      }
+      return -1;
    }
 
    public String toString(){
